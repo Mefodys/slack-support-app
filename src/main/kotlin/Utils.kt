@@ -24,3 +24,25 @@ fun fetchSlackHistory(id: String?, oldest: String?, latest: String?): MutableLis
     }
     return result.messages
 }
+
+fun mapForSlackUserIDandSlackName(rawMessages: MutableList<com.slack.api.model.Message>): MutableMap<String, String> {
+
+    val client = Slack.getInstance().methods()
+
+    val userNamesDict = mutableMapOf<String, String>()
+
+    val slackBotToken = System.getenv("SLACK_BOT_TOKEN")
+    for (message in rawMessages) {
+        if (!userNamesDict.containsKey(message.user)) {
+            val userInfo = client.usersInfo {
+                it
+                    .token(slackBotToken)
+                    .user(message.user)
+            }
+            userNamesDict[message.user] = userInfo.user.name
+        }
+
+    }
+
+    return userNamesDict
+}

@@ -12,6 +12,8 @@ repositories {
 
 dependencies {
     implementation("com.slack.api:slack-api-client:1.36.1")
+    implementation("org.slf4j:slf4j-nop:2.0.7")
+
     testImplementation(kotlin("test"))
 }
 
