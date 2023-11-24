@@ -1,6 +1,6 @@
 import java.io.OutputStream
 
-fun OutputStream.writeCsv(messages: List<Message>) {
+fun OutputStream.writeCsv1(messages: List<Message1>) {
     val writer = bufferedWriter()
     writer.write("""DateTime, SlackLink, RealName, Email, ReactionYT, ReactionInProgress, ReactionWhiteCheckMark""")
     writer.newLine()
@@ -9,5 +9,17 @@ fun OutputStream.writeCsv(messages: List<Message>) {
         writer.newLine()
     }
     writer.flush()
-    println("The first csv was generated")
+    println("The main csv was generated")
+}
+
+fun OutputStream.writeCsv2(messages: List<Message2>) {
+    val writer = bufferedWriter()
+    writer.write("""Team""")
+    writer.newLine()
+    messages.forEach {
+        writer.write("${it.project}")
+        writer.newLine()
+    }
+    writer.flush()
+    println("Teams csv was generated")
 }

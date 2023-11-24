@@ -20,8 +20,18 @@ suspend fun main() {
         listOfTwoMapsWithUserData
     )
 
+    val listOfMessagesReadyforSecondCsv = listOfMessagesReadyforSecondCsv(
+        mapForEmailAndTeamName
+    )
+
     //Mef comment: output the first CSV file
     withContext(Dispatchers.IO) {
-        FileOutputStream("filename.csv").apply { writeCsv(listOfMessagesReadyforFirstCsv) }
+        FileOutputStream("filename.csv").apply { writeCsv1(listOfMessagesReadyforFirstCsv) }
     }
+
+    //Mef comment: output the second CSV file
+    withContext(Dispatchers.IO) {
+        FileOutputStream("filename2.csv").apply { writeCsv2(listOfMessagesReadyforSecondCsv) }
+    }
+
 }
