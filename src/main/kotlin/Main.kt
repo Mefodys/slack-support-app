@@ -1,3 +1,7 @@
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.withContext
+import java.io.FileOutputStream
+
 suspend fun main() {
 
     //Mef comment: make a request to obtain Slack History
@@ -15,4 +19,9 @@ suspend fun main() {
         rawSlackMessages,
         listOfTwoMapsWithUserData
     )
+
+    //Mef comment: output the first CSV file
+    withContext(Dispatchers.IO) {
+        FileOutputStream("filename.csv").apply { writeCsv(listOfMessagesReadyforFirstCsv) }
+    }
 }

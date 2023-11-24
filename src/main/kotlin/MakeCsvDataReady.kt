@@ -1,7 +1,6 @@
 fun makeListOfMessagesReadyforFirstCSV(
     rawSlackMessages: List<com.slack.api.model.Message>?,
     listOfTwoMapsWithUserData: List<MutableMap<String, String>>,
-    //mapForEmailAndTeamName: MutableMap<String, MutableList<String>>,
 ): MutableList<Message> {
     val listOfMessages: MutableList<Message> = mutableListOf()
 
@@ -36,7 +35,7 @@ fun makeListOfMessagesReadyforFirstCSV(
 
                 val readyMessage = Message(
                     dateTime = newConvertedTimestamp,
-                    link = messagePermalink,
+                    slackLink = messagePermalink,
                     realName = listOfTwoMapsWithUserData[0][message.user],
                     slackEmail = listOfTwoMapsWithUserData[1][message.user],
                     reactionYT = youtrackReaction,

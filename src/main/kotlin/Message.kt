@@ -1,6 +1,6 @@
 data class Message(
     val dateTime: String,
-    val link: String,
+    val slackLink: String,
     val realName: String? = null,
     val slackEmail: String? = null,
 
