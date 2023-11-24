@@ -1,3 +1,5 @@
+import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
+
 plugins {
     kotlin("jvm") version "1.9.20"
     application
@@ -31,4 +33,8 @@ kotlin {
 
 application {
     mainClass.set("MainKt")
+}
+
+tasks.withType<KotlinCompile> {
+    kotlinOptions.freeCompilerArgs = listOf("-Xdebug")  //do not use in prod
 }

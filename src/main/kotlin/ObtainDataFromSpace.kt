@@ -12,8 +12,6 @@ suspend fun makeMapForEmailandTeam(mapForSlackUserIDandSlackEmail: MutableMap<St
     for (element in mapForSlackUserIDandSlackEmail) {
         listOfEmails.add(element.value)
     }
-//    println(listOfEmails)
-//============================================
 
     val spaceToken = System.getenv("SPACE_TOKEN")
     val spaceHttpClient = ktorClientForSpace()
@@ -24,7 +22,7 @@ suspend fun makeMapForEmailandTeam(mapForSlackUserIDandSlackEmail: MutableMap<St
         token = spaceToken
     )
 
-    //Create a list of teamIDs (using user email)
+    //Mef comment: Create a list of teamIDs (using user email)
     for (email in listOfEmails) {
 
         try {
