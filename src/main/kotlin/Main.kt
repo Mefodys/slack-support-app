@@ -1,4 +1,4 @@
-fun main() {
+suspend fun main() {
 
     //Mef comment: make a request to obtain Slack History
     val rawSlackMessages =
