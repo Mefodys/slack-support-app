@@ -6,5 +6,4 @@ object Settings {
     val fromDate = dateToUnixTimestamp(2023, 9, 1).toString()
     val tillDate = dateToUnixTimestamp(2023, 12, 1).toString()
 
-
 }

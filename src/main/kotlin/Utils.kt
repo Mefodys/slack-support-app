@@ -36,24 +36,38 @@ fun fetchSlackHistory(id: String?, oldest: String?, latest: String?): List<com.s
     return messagesWithText
 }
 
-fun mapForSlackUserIDandSlackName(rawMessages: List<com.slack.api.model.Message>): MutableMap<String, String> {
+fun mapForSlackUserIDandSlackName(rawMessages: List<com.slack.api.model.Message>): List<MutableMap<String, String>> {
 
     val client = Slack.getInstance().methods()
 
-    val userNamesDict = mutableMapOf<String, String>()
+    val userRealNamesDict = mutableMapOf<String, String>()
+    val userEmailsDict = mutableMapOf<String, String>()
 
     val slackBotToken = System.getenv("SLACK_BOT_TOKEN")
     for (message in rawMessages) {
-        if (!userNamesDict.containsKey(message.user)) {
+
+        //Mef comment: Addditional check if the usedID not null (if null then there will NPE during client.userInfo request)
+        if (message.user != null) {
             val userInfo = client.usersInfo {
                 it
                     .token(slackBotToken)
                     .user(message.user)
             }
-            userNamesDict[message.user] = userInfo.user.name
+
+            //Mef comment: filling of two maps with userdata
+            userRealNamesDict[message.user] = userInfo.user.realName
+            userEmailsDict[message.user] = userInfo.user.profile.email
         }
 
     }
 
-    return userNamesDict
+    //Mef comment: an additional function to make a list of maps (somewhy does not work by default)
+    fun listOfUsersDicts(
+        userRealNamesDict: MutableMap<String, String>,
+        userEmailsDict: MutableMap<String, String>,
+    ): List<MutableMap<String, String>> {
+        return listOf(userRealNamesDict, userEmailsDict)
+    }
+
+    return listOfUsersDicts(userRealNamesDict, userEmailsDict)
 }

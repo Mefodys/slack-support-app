@@ -5,7 +5,7 @@ fun main() {
         fetchSlackHistory(Settings.channelNameForFetch, Settings.fromDate, Settings.tillDate)
 
 
-    //Mef comment: temporary map:
+    //Mef comment: make a request for userinfo to obtain a list with two maps(userid-username, userid-email) based on rawMessages.
     val mapForSlackUserIDandSlackName = mapForSlackUserIDandSlackName(rawMessages)
-    println(mapForSlackUserIDandSlackName.map { "${it.key}: ${it.value}" }.joinToString(", "))
+
 }
