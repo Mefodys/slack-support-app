@@ -36,7 +36,7 @@ fun fetchSlackHistory(id: String?, oldest: String?, latest: String?): List<com.s
     return messagesWithText
 }
 
-fun mapForSlackUserIDandSlackName(rawMessages: List<com.slack.api.model.Message>): List<MutableMap<String, String>> {
+fun obtainTwoMapsWithUserIDUserNameEmail(rawSlackMessages: List<com.slack.api.model.Message>): List<MutableMap<String, String>> {
 
     val client = Slack.getInstance().methods()
 
@@ -44,7 +44,7 @@ fun mapForSlackUserIDandSlackName(rawMessages: List<com.slack.api.model.Message>
     val userEmailsDict = mutableMapOf<String, String>()
 
     val slackBotToken = System.getenv("SLACK_BOT_TOKEN")
-    for (message in rawMessages) {
+    for (message in rawSlackMessages) {
 
         //Mef comment: Addditional check if the usedID not null (if null then there will NPE during client.userInfo request)
         if (message.user != null) {
@@ -71,3 +71,5 @@ fun mapForSlackUserIDandSlackName(rawMessages: List<com.slack.api.model.Message>
 
     return listOfUsersDicts(userRealNamesDict, userEmailsDict)
 }
+
+val messagePermalink = "https://" + "jetbrains.slack.com" + "/archives/" + "${Settings.channelNameForFetch}" + "/p"
