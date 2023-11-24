@@ -60,3 +60,5 @@ fun obtainTwoMapsWithUserIDUserNameEmail(rawSlackMessages: List<com.slack.api.mo
 
     return listOfUsersDicts(userRealNamesDict, userEmailsDict)
 }
+
+

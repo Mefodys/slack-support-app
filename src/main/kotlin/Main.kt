@@ -7,4 +7,9 @@ fun main() {
 
     //Mef comment: make a request for userinfo to obtain a list with two maps(userid-username, userid-email) based on rawMessages.
     val listOfTwoMapsWithUserData = obtainTwoMapsWithUserIDUserNameEmail(rawSlackMessages)
+
+    //Gather info from Space and make a map
+    val mapForEmailAndTeamName = makeMapForEmailandTeam(listOfTwoMapsWithUserData[1])
+
+
 }
