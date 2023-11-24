@@ -35,6 +35,6 @@ application {
     mainClass.set("MainKt")
 }
 
-tasks.withType<KotlinCompile> {
-    kotlinOptions.freeCompilerArgs = listOf("-Xdebug")  //do not use in prod
-}
+//tasks.withType<KotlinCompile> {
+//    kotlinOptions.freeCompilerArgs = listOf("-Xdebug")  //do not use in prod
+//}

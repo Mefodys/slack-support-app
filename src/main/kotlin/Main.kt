@@ -15,5 +15,4 @@ suspend fun main() {
         rawSlackMessages,
         listOfTwoMapsWithUserData
     )
-
 }

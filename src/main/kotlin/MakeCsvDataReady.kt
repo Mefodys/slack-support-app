@@ -6,12 +6,11 @@ fun makeListOfMessagesReadyforFirstCSV(
     val listOfMessages: MutableList<Message> = mutableListOf()
 
     var wcmReaction = false
-    var eyesReaction = false
-    var heartReaction = false
+    var inProgressReaction = false
+    var youtrackReaction = false
 
     if (rawSlackMessages != null) {
         for (message in rawSlackMessages) {
-            if (message.text != null) {
 
                 val messageTs = message.ts.filterNot { it == '.' }
                 val newConvertedTimestamp = convertTStoReadableDateTime(message)
@@ -20,14 +19,17 @@ fun makeListOfMessagesReadyforFirstCSV(
                 if (message.reactions != null) {
                     val messageReactions = message.reactions
                     for (reaction in messageReactions) {
+
+                        //BUG! reactions somewhy are not get correctly. try to look at the issue again with colleagues.
+
                         if (reaction.name == "white_check_mark") {
                             wcmReaction = true
                         }
                         if (reaction.name == "in_progress") {
-                            eyesReaction = true
+                            inProgressReaction = true
                         }
                         if (reaction.name == "youtrack") {
-                            heartReaction = true
+                            youtrackReaction = true
                         }
                     }
                 }
@@ -37,12 +39,13 @@ fun makeListOfMessagesReadyforFirstCSV(
                     link = messagePermalink,
                     realName = listOfTwoMapsWithUserData[0][message.user],
                     slackEmail = listOfTwoMapsWithUserData[1][message.user],
-                    reactionYT = heartReaction,
-                    reactionInProgress = eyesReaction,
+                    reactionYT = youtrackReaction,
+                    reactionInProgress = inProgressReaction,
                     reactionWhiteCheckMark = wcmReaction)
+
+                listOfMessages.add(readyMessage)
             }
         }
-    }
     val reversedListOfMessages = listOfMessages.reversed() as MutableList
     return reversedListOfMessages
 }
