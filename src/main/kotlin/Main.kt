@@ -20,9 +20,13 @@ suspend fun main() {
         listOfTwoMapsWithUserData
     )
 
+    //Mef comment: create a list ready for the second csv (teams)
     val listOfMessagesReadyforSecondCsv = listOfMessagesReadyforSecondCsv(
         mapForEmailAndTeamName
     )
+
+    //Mef comment: create a list ready for the third csv (YouTrack tickets and its details)
+    val listOfMessagesReadyforThirdCsv = listOfMessagesReadyforThirdCsv()
 
     //Mef comment: output the first CSV file
     withContext(Dispatchers.IO) {
@@ -32,6 +36,11 @@ suspend fun main() {
     //Mef comment: output the second CSV file
     withContext(Dispatchers.IO) {
         FileOutputStream("filename2.csv").apply { writeCsv2(listOfMessagesReadyforSecondCsv) }
+    }
+
+    //Mef comment: output the third CSV file
+    withContext(Dispatchers.IO) {
+        FileOutputStream("filename3.csv").apply { writeCsv3(listOfMessagesReadyforThirdCsv) }
     }
 
 }
