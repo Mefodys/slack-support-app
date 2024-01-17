@@ -6,10 +6,5 @@ data class Message1(
     val reactionYT: Boolean? = null,
     val reactionInProgress: Boolean? = null,
     val reactionWhiteCheckMark: Boolean? = null,
-
-//    val issueID: String? = null,
-//    val issueType: String? = null,
-//    val subsystem: String? = null,
-//    val stateInYT: String? = null
 )
 

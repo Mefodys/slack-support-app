@@ -26,7 +26,7 @@ suspend fun main() {
     )
 
     //Mef comment: create a list ready for the third csv (YouTrack tickets and its details)
-    val listOfMessagesReadyforThirdCsv = listOfMessagesReadyforThirdCsv()
+    val listOfMessagesReadyforThirdCsv = listOfMessagesReadyforThirdCsv(rawSlackMessages, mapForEmailAndTeamName)
 
     //Mef comment: output the first CSV file
     withContext(Dispatchers.IO) {
@@ -44,3 +44,4 @@ suspend fun main() {
     }
 
 }
+

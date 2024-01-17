@@ -23,3 +23,15 @@ fun OutputStream.writeCsv2(messages: List<Message2>) {
     writer.flush()
     println("Teams csv was generated")
 }
+
+fun OutputStream.writeCsv3(messages: List<Message3>) {
+    val writer = bufferedWriter()
+    writer.write("""TicketID, Type, Subsystem, State""")
+    writer.newLine()
+    messages.forEach {
+        writer.write("${it.issueID}, ${it.issueType}, ${it.subsystem}, ${it.stateInYT}")
+        writer.newLine()
+    }
+    writer.flush()
+    println("YouTrack tickets csv was generated")
+}
