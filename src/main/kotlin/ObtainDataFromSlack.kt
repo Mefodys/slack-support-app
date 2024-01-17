@@ -32,6 +32,7 @@ fun obtainTwoMapsWithUserIDUserNameEmail(rawSlackMessages: List<com.slack.api.mo
     val userRealNamesDict = mutableMapOf<String, String>()
     val userEmailsDict = mutableMapOf<String, String>()
 
+
     val slackBotToken = System.getenv("SLACK_BOT_TOKEN")
     for (message in rawSlackMessages) {
 
@@ -45,7 +46,11 @@ fun obtainTwoMapsWithUserIDUserNameEmail(rawSlackMessages: List<com.slack.api.mo
 
             //Mef comment: filling of two maps with userdata
             userRealNamesDict[message.user] = userInfo.user.realName
+
+            //Filling the second map (but skip the profile with no email)
+            if (userInfo.user.profile.email == null) continue
             userEmailsDict[message.user] = userInfo.user.profile.email
+
         }
 
     }
