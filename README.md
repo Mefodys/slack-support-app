@@ -30,7 +30,7 @@ To run the application successfully, follow the steps below to obtain the requir
 - `Teams`: View teams.
 
 
-## 3.Use these tokens:
+## 3. Use these tokens:
 
 Add these tokens to the Run configuration in your project under the following environment variables
 - `SLACK_BOT_TOKEN`
