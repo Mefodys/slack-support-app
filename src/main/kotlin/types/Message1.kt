@@ -1,3 +1,5 @@
+package types
+
 data class Message1(
     val dateTime: String,
     val slackLink: String,

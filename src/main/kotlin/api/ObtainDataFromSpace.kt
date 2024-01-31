@@ -1,17 +1,22 @@
+package api
+
 import space.jetbrains.api.runtime.SpaceClient
 import space.jetbrains.api.runtime.ktorClientForSpace
 import space.jetbrains.api.runtime.resources.teamDirectory
 import space.jetbrains.api.runtime.types.TeamIdentifier
+import types.User
+import kotlin.collections.set
+import kotlin.collections.take
+import kotlin.collections.toMutableList
+import kotlin.toString
 
-suspend fun makeMapForEmailandTeam(mapForSlackUserIDandSlackEmail: MutableMap<String, String>): MutableMap<String, MutableList<String>> {
-    val listOfEmails = mutableListOf<String>()
+
+// (Email -> 4 Projects max)
+suspend fun makeMapForEmailAndTeam(users: List<User>): MutableMap<String, MutableList<String>> {
+
     val listOfTeamID = mutableListOf<String>()
     val mapOfTeamIDAndTeamName = mutableMapOf<String, String>()
     val mapForEmailandTeam = mutableMapOf<String, MutableList<String>>()
-
-    for (element in mapForSlackUserIDandSlackEmail) {
-        listOfEmails.add(element.value)
-    }
 
     val spaceToken = System.getenv("SPACE_TOKEN")
     val spaceHttpClient = ktorClientForSpace()
@@ -23,11 +28,11 @@ suspend fun makeMapForEmailandTeam(mapForSlackUserIDandSlackEmail: MutableMap<St
     )
 
     //Mef comment: Create a list of teamIDs (using user email)
-    for (email in listOfEmails) {
+    for (user in users) {
 
         try {
             val infoFromSpace = spaceClient.teamDirectory.profiles.getProfileByEmail(
-                email = email
+                email = user.email
             ) {
                 //username()
                 memberships()
@@ -39,11 +44,10 @@ suspend fun makeMapForEmailandTeam(mapForSlackUserIDandSlackEmail: MutableMap<St
                 listOfTeamID.add(i.team.id)
                 tempListOfTeamIDs.add(i.team.id)
             }
-            mapForEmailandTeam[email] = tempListOfTeamIDs
+            mapForEmailandTeam[user.email] = tempListOfTeamIDs
 
 
-        } catch (e: Exception) { println("Failed on $email ") }
-
+        } catch (e: Exception) { println("Failed on $user ") }
     }
 
 

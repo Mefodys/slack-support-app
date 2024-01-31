@@ -1,4 +1,11 @@
+package serialization
+
+import types.Message1
+import types.Message2
+import types.Message3
 import java.io.OutputStream
+import kotlin.collections.forEach
+import kotlin.io.bufferedWriter
 
 fun OutputStream.writeCsv1(messages: List<Message1>) {
     val writer = bufferedWriter()
