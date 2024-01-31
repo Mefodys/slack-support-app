@@ -12,11 +12,11 @@ import kotlin.toString
 
 
 // (Email -> 4 Projects max)
-suspend fun makeMapForEmailAndTeam(users: List<User>): MutableMap<String, MutableList<String>> {
+suspend fun mapForEmailAndTeam(users: List<User>): MutableMap<String, MutableList<String>> {
 
     val listOfTeamID = mutableListOf<String>()
     val mapOfTeamIDAndTeamName = mutableMapOf<String, String>()
-    val mapForEmailandTeam = mutableMapOf<String, MutableList<String>>()
+    val mapForEmailAndTeam = mutableMapOf<String, MutableList<String>>()
 
     val spaceToken = System.getenv("SPACE_TOKEN")
     val spaceHttpClient = ktorClientForSpace()
@@ -44,7 +44,7 @@ suspend fun makeMapForEmailAndTeam(users: List<User>): MutableMap<String, Mutabl
                 listOfTeamID.add(i.team.id)
                 tempListOfTeamIDs.add(i.team.id)
             }
-            mapForEmailandTeam[user.email] = tempListOfTeamIDs
+            mapForEmailAndTeam[user.email] = tempListOfTeamIDs
 
 
         } catch (e: Exception) { println("Failed on $user ") }
@@ -64,7 +64,7 @@ suspend fun makeMapForEmailAndTeam(users: List<User>): MutableMap<String, Mutabl
 
     val newMapForEmailandTeam = mutableMapOf<String, MutableList<String>>()
     var tempTrueNames = mutableListOf<String>()
-    for (i in mapForEmailandTeam) {
+    for (i in mapForEmailAndTeam) {
         var counter = i.value.size
         if (i.value.size > 1) {
 
@@ -76,7 +76,6 @@ suspend fun makeMapForEmailAndTeam(users: List<User>): MutableMap<String, Mutabl
                         if (j == k.key) {
                             tempTrueNames.add(k.value)
                         }
-
                     }
                     counter -= 1
                 }
@@ -87,9 +86,7 @@ suspend fun makeMapForEmailAndTeam(users: List<User>): MutableMap<String, Mutabl
                     if (j == k.key) {
                         tempTrueNames.add(k.value)
                     }
-
                 }
-
             }
         }
 
@@ -103,8 +100,6 @@ suspend fun makeMapForEmailAndTeam(users: List<User>): MutableMap<String, Mutabl
 
         newMapForEmailandTeam[i.key] = tempTrueNames
         tempTrueNames = mutableListOf()
-
-
     }
 
     return newMapForEmailandTeam

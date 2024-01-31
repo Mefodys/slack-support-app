@@ -1,19 +1,20 @@
 package api
 
+import Settings.channelNameForFetch
 import com.slack.api.Slack
 import com.slack.api.methods.MethodsClient
+import com.slack.api.methods.response.conversations.ConversationsRepliesResponse
 import com.slack.api.model.Message
 import types.MessageWithUser
 import types.User
 import kotlin.collections.filter
 import kotlin.collections.mutableListOf
-import kotlin.collections.set
 
 class SlackAPI (
     private val token: String,
     private val client: MethodsClient = Slack.getInstance().methods()
 ) {
-    fun fetchSlackHistory(channelID: String?, oldest: String?, latest: String?): List<com.slack.api.model.Message> {
+    private fun fetchSlackHistory(channelID: String?, oldest: String?, latest: String?): List<com.slack.api.model.Message> {
         val allRawMessages = client
             .conversationsHistory {
                 it
@@ -37,31 +38,7 @@ class SlackAPI (
     }
 
 
-    fun obtainTwoMapsWithUserIDUserNameEmail(rawSlackMessages: List<com.slack.api.model.Message>, ): Pair<List<User>, List<MessageWithUser>>  {
-
-        val userRealNamesDict = mutableMapOf<String, String>()
-        val userEmailsDict = mutableMapOf<String, String>()
-
-        for (message in rawSlackMessages) {
-            //Mef comment: Additional check if the usedID not null (if null then there will NPE during client.userInfo request)
-            if (message.user != null) {
-                val userInfo = client.usersInfo {
-                    it
-                        .token(token)
-                        .user(message.user)
-                }
-
-                //Mef comment: filling of two maps with userdata
-                userRealNamesDict[message.user] = userInfo.user.realName
-
-                //Filling the second map (but skip the profile with no email)
-                if (userInfo.user.profile.email == null) continue
-                userEmailsDict[message.user] = userInfo.user.profile.email
-
-
-            }
-        }
-
+    private fun deserializeData(rawSlackMessages: List<Message>): Pair<List<User>, List<MessageWithUser>>  {
         val messageWithUsers = mutableListOf<MessageWithUser>()
 
         val listOfUsers = rawSlackMessages
@@ -77,8 +54,6 @@ class SlackAPI (
                         .user(msg.user)
                 }
 
-
-
                 val user = User(
                     id = msg.user,
                     name = userInfo.user.realName,
@@ -89,6 +64,20 @@ class SlackAPI (
             }.toList()
 
         return Pair(listOfUsers, messageWithUsers)
+    }
+
+    fun getData(channelID: String?, oldest: String?, latest: String?): Pair<List<User>, List<MessageWithUser>> =
+         fetchSlackHistory(channelID, oldest, latest).let { deserializeData(it) }
+
+
+
+    fun getConversationsReplies(message: Message): ConversationsRepliesResponse {
+        return client.conversationsReplies {
+            it
+                .token(token)
+                .channel(channelNameForFetch)
+                .ts(message.ts)
+        }
     }
 }
 

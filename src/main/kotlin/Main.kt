@@ -1,11 +1,11 @@
 import api.SlackAPI
-import api.makeMapForEmailAndTeam
+import api.mapForEmailAndTeam
 
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import serialization.makeMessagesforSecondCsv
-import serialization.makeMessagesforThirdCsv
-import serialization.makeMessagesForFirstCsv
+import serialization.messagesForThirdCsv
+import serialization.messagesForFirstCsv
 import serialization.writeCsv1
 import serialization.writeCsv2
 import serialization.writeCsv3
@@ -17,26 +17,14 @@ import java.io.FileOutputStream
 
 suspend fun main() {
     val slackAPI = SlackAPI(System.getenv("SLACK_BOT_TOKEN"))
-
-    //Mef comment: make a request to obtain Slack History
-    val rawSlackMessages =
-        slackAPI.fetchSlackHistory(Settings.channelNameForFetch, Settings.fromDate, Settings.tillDate)
-
-    //Mef comment: make a request for userinfo to obtain a list with two maps(userid-username, userid-email) based on rawMessages.
-    val (users, messageWithUser) = slackAPI.obtainTwoMapsWithUserIDUserNameEmail(rawSlackMessages)
+    val (users, messageWithUser) = slackAPI.getData(Settings.channelNameForFetch, Settings.fromDate, Settings.tillDate)
 
 
     //Mef comment: Gather info from Space and make a map (Email -> 4 Projects max)
-    val mapForEmailAndTeamName = makeMapForEmailAndTeam(users)
-
-//    val messagesWithUsers = makeMessagesWithUsers(users, rawSlackMessages)
+    val mapForEmailAndTeamName = mapForEmailAndTeam(users)
 
     //Mef comment: create a list ready for the first csv
-    val messagesReadyForFirstCsv = makeMessagesForFirstCsv(
-        rawSlackMessages,
-        users,
-        messageWithUser
-    )
+    val messagesReadyForFirstCsv = messagesForFirstCsv(messageWithUser)
 
     //Mef comment: create a list ready for the second csv (teams)
     val messagesForSecondCsv = makeMessagesforSecondCsv(
@@ -44,7 +32,7 @@ suspend fun main() {
     )
 
     //Mef comment: create a list ready for the third csv (YouTrack tickets and its details)
-    val messagesForThirdCsv = makeMessagesforThirdCsv(rawSlackMessages, mapForEmailAndTeamName)
+    val messagesForThirdCsv = messagesForThirdCsv(slackAPI, messageWithUser)
 
     //Mef comment: output the first CSV file
     withContext(Dispatchers.IO) {
