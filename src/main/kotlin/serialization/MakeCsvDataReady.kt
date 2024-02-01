@@ -4,9 +4,9 @@ import api.SlackAPI
 import com.slack.api.methods.response.conversations.ConversationsRepliesResponse
 import convertTStoReadableDateTime
 import messagePermalink
-import types.CsvMessage1
-import types.CsvMessage2
-import types.CsvMessage3
+import types.MainCsvDTO
+import types.TeamCsvDTO
+import types.YouTrackTicketCsvDTO
 import types.MessageWithUser
 import kotlin.sequences.flatMap
 import kotlin.sequences.joinToString
@@ -18,7 +18,7 @@ import kotlin.text.toRegex
 
 fun messagesForFirstCsv(
     messagesWithUsers: List<MessageWithUser>
-): List<CsvMessage1> {
+): List<MainCsvDTO> {
 
     val reversedListOfMessages = messagesWithUsers.map {
         val message = it.msg
@@ -48,7 +48,7 @@ fun messagesForFirstCsv(
             }
         }
 
-        CsvMessage1(
+        MainCsvDTO(
             dateTime = newConvertedTimestamp,
             slackLink = messagePermalink,
             realName = user.name,
@@ -63,12 +63,12 @@ fun messagesForFirstCsv(
 }
 
 
-fun messagesForSecondCsv(mapForEmailAndTeamName: MutableMap<String, MutableList<String>>): List<CsvMessage2> {
+fun messagesForSecondCsv(mapForEmailAndTeamName: MutableMap<String, MutableList<String>>): List<TeamCsvDTO> {
     val listOfProjects = mapForEmailAndTeamName.flatMap { message ->
         val projects = message.value
         projects.asSequence().filter { it != "null" }
             .map {
-                CsvMessage2(
+                TeamCsvDTO(
                     project = it
                 )
             }
@@ -81,7 +81,7 @@ fun messagesForSecondCsv(mapForEmailAndTeamName: MutableMap<String, MutableList<
 fun messagesForThirdCsv(
     slackAPI: SlackAPI,
     messageWithUser: List<MessageWithUser>,
-): List<CsvMessage3> {
+): List<YouTrackTicketCsvDTO> {
 
     val pattern = ("[A-Z]{2,}\\-[\\d]{1,}").toRegex()
 
@@ -106,7 +106,7 @@ fun messagesForThirdCsv(
             } else
                 setOf()
         }
-        .map { CsvMessage3(issueID = it) }
+        .map { YouTrackTicketCsvDTO(issueID = it) }
         .toList()
 
     return result
