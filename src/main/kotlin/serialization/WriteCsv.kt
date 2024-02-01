@@ -1,13 +1,13 @@
 package serialization
 
-import types.Message1
-import types.Message2
-import types.Message3
+import types.CsvMessage1
+import types.CsvMessage2
+import types.CsvMessage3
 import java.io.OutputStream
 import kotlin.collections.forEach
 import kotlin.io.bufferedWriter
 
-fun OutputStream.writeCsv1(messages: List<Message1>) {
+fun OutputStream.writeCsv1(messages: List<CsvMessage1>) {
     val writer = bufferedWriter()
     writer.write("""DateTime, SlackLink, RealName, Email, ReactionYT, ReactionInProgress, ReactionWhiteCheckMark""")
     writer.newLine()
@@ -19,7 +19,7 @@ fun OutputStream.writeCsv1(messages: List<Message1>) {
     println("The main csv was generated")
 }
 
-fun OutputStream.writeCsv2(messages: List<Message2>) {
+fun OutputStream.writeCsv2(messages: List<CsvMessage2>) {
     val writer = bufferedWriter()
     writer.write("""Team""")
     writer.newLine()
@@ -31,7 +31,7 @@ fun OutputStream.writeCsv2(messages: List<Message2>) {
     println("Teams csv was generated")
 }
 
-fun OutputStream.writeCsv3(messages: List<Message3>) {
+fun OutputStream.writeCsv3(messages: List<CsvMessage3>) {
     val writer = bufferedWriter()
     writer.write("""TicketID, Type, Subsystem, State""")
     writer.newLine()

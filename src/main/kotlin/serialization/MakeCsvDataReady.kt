@@ -1,12 +1,14 @@
 package serialization
 
 import api.SlackAPI
+import com.slack.api.methods.response.conversations.ConversationsRepliesResponse
 import convertTStoReadableDateTime
 import messagePermalink
-import types.Message1
-import types.Message2
-import types.Message3
+import types.CsvMessage1
+import types.CsvMessage2
+import types.CsvMessage3
 import types.MessageWithUser
+import kotlin.sequences.flatMap
 import kotlin.sequences.joinToString
 import kotlin.sequences.map
 import kotlin.text.contains
@@ -16,14 +18,9 @@ import kotlin.text.toRegex
 
 fun messagesForFirstCsv(
     messagesWithUsers: List<MessageWithUser>
-): MutableList<Message1> {
-//    if (rawSlackMessages == null) return mutableListOf()
+): List<CsvMessage1> {
 
-
-    val listOfMessages: MutableList<Message1> = mutableListOf()
-
-    ///
-    messagesWithUsers.forEach {
+    val reversedListOfMessages = messagesWithUsers.map {
         val message = it.msg
         val user = it.user
 
@@ -51,123 +48,66 @@ fun messagesForFirstCsv(
             }
         }
 
-        val readyMessage = Message1(
+        CsvMessage1(
             dateTime = newConvertedTimestamp,
             slackLink = messagePermalink,
-            realName = user.name,//users[0][message.user],
-            slackEmail = user.email, //users[1][message.user],
+            realName = user.name,
+            slackEmail = user.email,
             reactionYT = youtrackReaction,
             reactionInProgress = inProgressReaction,
             reactionWhiteCheckMark = wcmReaction
         )
-
-        listOfMessages.add(readyMessage)
     }
-    ///
-//    for (message in rawSlackMessages) {
-//
-//
-//
-//        var wcmReaction = false
-//        var inProgressReaction = false
-//        var youtrackReaction = false
-//
-//        val messageTs = message.ts.filterNot { it == '.' }
-//        val newConvertedTimestamp = convertTStoReadableDateTime(message)
-//        val messagePermalink = messagePermalink + messageTs
-//
-//        if (message.reactions != null) {
-//            val messageReactions = message.reactions
-//            for (reaction in messageReactions) {
-//
-//                if (reaction.name == "white_check_mark") {
-//                    wcmReaction = true
-//                }
-//                if (reaction.name == "in_progress") {
-//                    inProgressReaction = true
-//                }
-//                if (reaction.name == "youtrack") {
-//                    youtrackReaction = true
-//                }
-//            }
-//        }
-//
-//        val readyMessage = Message1(
-//            dateTime = newConvertedTimestamp,
-//            slackLink = messagePermalink,
-//            realName = users[0][message.user],
-//            slackEmail = users[1][message.user],
-//            reactionYT = youtrackReaction,
-//            reactionInProgress = inProgressReaction,
-//            reactionWhiteCheckMark = wcmReaction
-//        )
-//
-//        listOfMessages.add(readyMessage)
-//    }
 
-    val reversedListOfMessages = listOfMessages
     return reversedListOfMessages
 }
 
 
-fun makeMessagesforSecondCsv(mapForEmailAndTeamName: MutableMap<String, MutableList<String>>): MutableList<Message2> {
-    val listOfProjects: MutableList<Message2> = mutableListOf()
-
-    for (message in mapForEmailAndTeamName) {
+fun messagesForSecondCsv(mapForEmailAndTeamName: MutableMap<String, MutableList<String>>): List<CsvMessage2> {
+    val listOfProjects = mapForEmailAndTeamName.flatMap { message ->
         val projects = message.value
-        for (i in projects) {
-            if (i != "null") {
-                val readyMessage = Message2(
-                    project = i
+        projects.asSequence().filter { it != "null" }
+            .map {
+                CsvMessage2(
+                    project = it
                 )
-                listOfProjects.add(readyMessage)
             }
-        }
     }
+
     return listOfProjects
 }
 
 
 fun messagesForThirdCsv(
     slackAPI: SlackAPI,
-    messageWithUser: List<MessageWithUser>
-): MutableList<Message3> {
+    messageWithUser: List<MessageWithUser>,
+): List<CsvMessage3> {
 
-    val listOfTickets: MutableList<Message3> = mutableListOf()
-    val ticketSet = mutableSetOf<String>()
+    val pattern = ("[A-Z]{2,}\\-[\\d]{1,}").toRegex()
 
-    for (it in messageWithUser) {
-        val message = it.msg
-        if (message.reactions == null) continue
-
-        val messageReactions = message.reactions
-        for (reaction in messageReactions) {
-            if (reaction.name == "youtrack") {
-                val messagesInThread = slackAPI.getConversationsReplies(message)
-
-                val pattern = ("[A-Z]{2,}\\-[\\d]{1,}").toRegex()
-                //val matchList = mutableListOf<String>()
-
-                for (i in messagesInThread.messages) {
-                    if (i.text.contains("https://youtrack.jetbrains.com/issue/")) {
-                        val foundTicket = pattern.findAll(i.text)
-                        val names = foundTicket.map { it.value }.joinToString()
-                        ticketSet.add(names.substringBefore(","))
-                    }
-                }
-            }
-        }
-
+    val getMessagesWithYTLink = { messagesInThread: ConversationsRepliesResponse ->
+        messagesInThread.messages.asSequence()
+            .filter { it.text.contains("https://youtrack.jetbrains.com/issue/") }
+            .map {
+                val foundTicket = pattern.findAll(it.text)
+                val names = foundTicket.joinToString { it.value }
+                names.substringBefore(",")
+            }.toSet()
+            .filter { it != "null" } // are we sure it is possible?
     }
 
-    for (ticket in ticketSet) {
-        if (ticket != "null") {
-            val readyMessage = Message3(
-                issueID = ticket
-            )
-            listOfTickets.add(readyMessage)
+    val result = messageWithUser.asSequence()
+        .filter { it.msg.reactions != null }
+        .flatMap {
+            val messagesInThread = slackAPI.getThreadsFromMsg(it.msg)
+            val ytReaction = it.msg.reactions.find { it.name == "youtrack" }
+            if (ytReaction != null) {
+                getMessagesWithYTLink(messagesInThread)
+            } else
+                setOf()
         }
-    }
+        .map { CsvMessage3(issueID = it) }
+        .toList()
 
-    return listOfTickets
+    return result
 }

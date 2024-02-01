@@ -1,6 +1,6 @@
 package types
 
-data class Message1(
+data class CsvMessage1(
     val dateTime: String,
     val slackLink: String,
     val realName: String? = null,

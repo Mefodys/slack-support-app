@@ -1,5 +1,5 @@
 package types
 
-data class Message2(
+data class CsvMessage2(
     val project: String? = null
 )

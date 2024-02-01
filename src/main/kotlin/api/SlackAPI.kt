@@ -1,6 +1,6 @@
 package api
 
-import Settings.channelNameForFetch
+import Settings.channelToFetch
 import com.slack.api.Slack
 import com.slack.api.methods.MethodsClient
 import com.slack.api.methods.response.conversations.ConversationsRepliesResponse
@@ -12,15 +12,16 @@ import kotlin.collections.mutableListOf
 
 class SlackAPI (
     private val token: String,
-    private val client: MethodsClient = Slack.getInstance().methods()
 ) {
-    private fun fetchSlackHistory(channelID: String?, oldest: String?, latest: String?): List<com.slack.api.model.Message> {
+    private val client: MethodsClient = Slack.getInstance().methods()
+
+    private fun fetchSlackHistory(channelID: String, oldest: String, latest: String, limit: Int): List<Message> {
         val allRawMessages = client
             .conversationsHistory {
                 it
                     .token(token)
                     .channel(channelID)
-                    .limit(500)
+                    .limit(limit)
                     .oldest(oldest)
                     .latest(latest)
             }.also {
@@ -36,7 +37,6 @@ class SlackAPI (
 
         return messagesWithText
     }
-
 
     private fun deserializeData(rawSlackMessages: List<Message>): Pair<List<User>, List<MessageWithUser>>  {
         val messageWithUsers = mutableListOf<MessageWithUser>()
@@ -66,16 +66,15 @@ class SlackAPI (
         return Pair(listOfUsers, messageWithUsers)
     }
 
-    fun getData(channelID: String?, oldest: String?, latest: String?): Pair<List<User>, List<MessageWithUser>> =
-         fetchSlackHistory(channelID, oldest, latest).let { deserializeData(it) }
+    fun getData(channelID: String, oldest: String, latest: String, limit: Int): Pair<List<User>, List<MessageWithUser>> =
+         fetchSlackHistory(channelID, oldest, latest, limit).let { deserializeData(it) }
 
 
-
-    fun getConversationsReplies(message: Message): ConversationsRepliesResponse {
+    fun getThreadsFromMsg(message: Message): ConversationsRepliesResponse {
         return client.conversationsReplies {
             it
                 .token(token)
-                .channel(channelNameForFetch)
+                .channel(channelToFetch)
                 .ts(message.ts)
         }
     }
