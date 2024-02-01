@@ -1,7 +1,6 @@
 import api.SlackAPI
 import api.SpaceAPI
 import serialization.createCsv
-
 import serialization.messagesForSecondCsv
 import serialization.messagesForThirdCsv
 import serialization.messagesForFirstCsv
@@ -12,9 +11,11 @@ import kotlin.time.measureTime
 suspend fun main() {
     val slackAPI = SlackAPI(System.getenv("SLACK_BOT_TOKEN"))
     val spaceAPI = SpaceAPI(System.getenv("SPACE_TOKEN"))
+    val limit = System.getenv("LIMIT")?.toInt() ?: 500
+
     val mark = markNow()
 
-    val (users, messageWithUser) = slackAPI.getData(Settings.channelToFetch, Settings.fromDate, Settings.tillDate, 50)
+    val (users, messageWithUser) = slackAPI.getData(Settings.channelToFetch, Settings.fromDate, Settings.tillDate, limit)
 
     //Mef comment: Gather info from Space and make a map (Email -> 4 Projects max)
     val emailToFirst4TeamNames = spaceAPI.getEmailToFirst4TeamNames(users)
