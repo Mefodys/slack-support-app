@@ -1,9 +1,9 @@
 import api.SlackAPI
 import api.SpaceAPI
 import serialization.createCsv
-import serialization.messagesForSecondCsv
-import serialization.messagesForThirdCsv
-import serialization.messagesForFirstCsv
+import serialization.getDataForTeamCsv
+import serialization.getDataForTicketCsv
+import serialization.getDataForMainCsv
 import kotlin.time.TimeSource.Monotonic.markNow
 import kotlin.time.measureTime
 
@@ -16,30 +16,24 @@ suspend fun main() {
     val mark = markNow()
 
     val (users, messageWithUser) = slackAPI.getData(Settings.channelToFetch, Settings.fromDate, Settings.tillDate, limit)
-
-    //Mef comment: Gather info from Space and make a map (Email -> 4 Projects max)
     val emailToFirst4TeamNames = spaceAPI.getEmailToFirst4TeamNames(users)
 
-    val messagesReadyForFirstCsv = messagesForFirstCsv(messageWithUser)
-
-    val messagesForSecondCsv = messagesForSecondCsv(emailToFirst4TeamNames)
-
-    // third csv (YouTrack tickets and its details)
-    val messagesForThirdCsv = messagesForThirdCsv(slackAPI, messageWithUser)
+    val dataForMainCsv = getDataForMainCsv(messageWithUser)
+    val dataForTeamCsv = getDataForTeamCsv(emailToFirst4TeamNames)
+    val dataForTicketCsv = getDataForTicketCsv(slackAPI, messageWithUser)
 
     println("apiTime = ${mark.elapsedNow()}")
+
 
     measureTime {
 
         createCsv(
             "filename.csv",
             "DateTime, SlackLink, RealName, Email, ReactionYT, ReactionInProgress, ReactionWhiteCheckMark",
-            messagesReadyForFirstCsv
+            dataForMainCsv
         )
-
-        createCsv("filename2.csv", "Team", messagesForSecondCsv)
-
-        createCsv("filename3.csv", "TicketID, Type, Subsystem, State", messagesForThirdCsv)
+        createCsv("filename2.csv", "Team", dataForTeamCsv)
+        createCsv("filename3.csv", "TicketID, Type, Subsystem, State", dataForTicketCsv)
 
     }.also { println("csvTime is $it") }
 

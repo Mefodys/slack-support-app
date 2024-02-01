@@ -16,7 +16,7 @@ import kotlin.text.filterNot
 import kotlin.text.substringBefore
 import kotlin.text.toRegex
 
-fun messagesForFirstCsv(
+fun getDataForMainCsv(
     messagesWithUsers: List<MessageWithUser>
 ): List<MainCsvDTO> {
 
@@ -63,7 +63,7 @@ fun messagesForFirstCsv(
 }
 
 
-fun messagesForSecondCsv(mapForEmailAndTeamName: MutableMap<String, MutableList<String>>): List<TeamCsvDTO> {
+fun getDataForTeamCsv(mapForEmailAndTeamName: MutableMap<String, MutableList<String>>): List<TeamCsvDTO> {
     val listOfProjects = mapForEmailAndTeamName.flatMap { message ->
         val projects = message.value
         projects.asSequence().filter { it != "null" }
@@ -78,7 +78,7 @@ fun messagesForSecondCsv(mapForEmailAndTeamName: MutableMap<String, MutableList<
 }
 
 
-fun messagesForThirdCsv(
+fun getDataForTicketCsv(
     slackAPI: SlackAPI,
     messageWithUser: List<MessageWithUser>,
 ): List<YouTrackTicketCsvDTO> {
