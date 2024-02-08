@@ -1,46 +1,43 @@
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.withContext
-import java.io.FileOutputStream
+import api.SlackAPI
+import api.SpaceAPI
+import serialization.createCsv
+import serialization.getDataForTeamCsv
+import serialization.getDataForTicketCsv
+import serialization.getDataForMainCsv
+import kotlin.time.TimeSource.Monotonic.markNow
+import kotlin.time.measureTime
+
 
 suspend fun main() {
+    val slackAPI = SlackAPI(System.getenv("SLACK_BOT_TOKEN"))
+    val spaceAPI = SpaceAPI(System.getenv("SPACE_TOKEN"))
+    val limit = System.getenv("LIMIT")?.toInt() ?: 500
 
-    //Mef comment: make a request to obtain Slack History
-    val rawSlackMessages =
-        fetchSlackHistory(Settings.channelNameForFetch, Settings.fromDate, Settings.tillDate)
+    val mark = markNow()
 
-    //Mef comment: make a request for userinfo to obtain a list with two maps(userid-username, userid-email) based on rawMessages.
-    val listOfTwoMapsWithUserData = obtainTwoMapsWithUserIDUserNameEmail(rawSlackMessages)
+    val (users, messageWithUser) = slackAPI.getData(Settings.channelToFetch, Settings.fromDate, Settings.tillDate, limit)
+    val emailToFirst4TeamNames = spaceAPI.getEmailToFirst4TeamNames(users)
 
-    //Mef comment: Gather info from Space and make a map (Email -> 4 Projects max)
-    val mapForEmailAndTeamName = makeMapForEmailandTeam(listOfTwoMapsWithUserData[1])
+    val dataForMainCsv = getDataForMainCsv(messageWithUser)
+    val dataForTeamCsv = getDataForTeamCsv(emailToFirst4TeamNames)
+    val dataForTicketCsv = getDataForTicketCsv(slackAPI, messageWithUser)
 
-    //Mef comment: create a list ready for the first csv
-    val listOfMessagesReadyforFirstCsv = makeListOfMessagesReadyforFirstCSV(
-        rawSlackMessages,
-        listOfTwoMapsWithUserData
-    )
+    println("apiTime = ${mark.elapsedNow()}")
 
-    //Mef comment: create a list ready for the second csv (teams)
-    val listOfMessagesReadyforSecondCsv = listOfMessagesReadyforSecondCsv(
-        mapForEmailAndTeamName
-    )
 
-    //Mef comment: create a list ready for the third csv (YouTrack tickets and its details)
-    val listOfMessagesReadyforThirdCsv = listOfMessagesReadyforThirdCsv(rawSlackMessages, mapForEmailAndTeamName)
+    measureTime {
 
-    //Mef comment: output the first CSV file
-    withContext(Dispatchers.IO) {
-        FileOutputStream("filename.csv").apply { writeCsv1(listOfMessagesReadyforFirstCsv) }
-    }
+        createCsv(
+            "filename.csv",
+            "DateTime, SlackLink, RealName, Email, ReactionYT, ReactionInProgress, ReactionWhiteCheckMark",
+            dataForMainCsv
+        )
+        createCsv("filename2.csv", "Team", dataForTeamCsv)
+        createCsv("filename3.csv", "TicketID, Type, Subsystem, State", dataForTicketCsv)
 
-    //Mef comment: output the second CSV file
-    withContext(Dispatchers.IO) {
-        FileOutputStream("filename2.csv").apply { writeCsv2(listOfMessagesReadyforSecondCsv) }
-    }
+    }.also { println("csvTime is $it") }
 
-    //Mef comment: output the third CSV file
-    withContext(Dispatchers.IO) {
-        FileOutputStream("filename3.csv").apply { writeCsv3(listOfMessagesReadyforThirdCsv) }
-    }
 
 }
+
+

@@ -1,4 +1,6 @@
-data class Message1(
+package types
+
+data class MainCsvDTO(
     val dateTime: String,
     val slackLink: String,
     val realName: String? = null,
@@ -6,5 +8,5 @@ data class Message1(
     val reactionYT: Boolean? = null,
     val reactionInProgress: Boolean? = null,
     val reactionWhiteCheckMark: Boolean? = null,
-)
+) : CsvSerializable
 

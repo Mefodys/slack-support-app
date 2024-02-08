@@ -1,4 +1,3 @@
-import com.slack.api.Slack
 import java.sql.Timestamp
 import java.util.*
 
@@ -12,7 +11,7 @@ fun dateToUnixTimestamp(year: Int, month: Int, day: Int): Long {
 
 }
 
-val messagePermalink = "https://" + "jetbrains.slack.com" + "/archives/" + "${Settings.channelNameForFetch}" + "/p"
+val messagePermalink = "https://" + "jetbrains.slack.com" + "/archives/" + Settings.channelToFetch + "/p"
 
 //Mef comment: convert ts to DateTime
 fun convertTStoReadableDateTime(message: com.slack.api.model.Message): String {
