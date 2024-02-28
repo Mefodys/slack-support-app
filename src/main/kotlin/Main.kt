@@ -1,20 +1,33 @@
 import api.SlackAPI
 import api.SpaceAPI
 import serialization.createCsv
+import serialization.deserializeDataForMainCsv
 import serialization.deserializeDataForTeamCsv
 import serialization.deserializeDataForTicketCsv
-import serialization.deserializeDataForMainCsv
 import kotlin.time.TimeSource.Monotonic.markNow
 import kotlin.time.measureTime
 
 
 suspend fun main() {
-    val slackAPI = SlackAPI(System.getenv("SLACK_BOT_TOKEN"))
+
+    var tokenType = "SLACK_TOKEN_JB"
+    if (Settings.CHANNEL_TO_FETCH != "#Kotlin") {
+        tokenType = "SLACK_TOKEN_KOTLINLANG"
+    }
+    val slackAPI = SlackAPI(System.getenv(tokenType))
+
+
+//
     val spaceAPI = SpaceAPI(System.getenv("SPACE_TOKEN"))
     val limit = System.getenv("LIMIT")?.toInt() ?: 500
 
     val markStart = markNow()
-    val (users, messageWithUser) = slackAPI.getData(Settings.channelToFetch, Settings.fromDate, Settings.tillDate, limit)
+    val (users, messageWithUser) = slackAPI.getData(
+        Settings.channelToFetch,
+        Settings.fromDate,
+        Settings.tillDate,
+        limit
+    )
     println("\nSlack ${markStart.elapsedNow()}")
 
     val spaceMark = markNow()
