@@ -13,10 +13,9 @@ import kotlin.sequences.joinToString
 import kotlin.sequences.map
 import kotlin.text.contains
 import kotlin.text.filterNot
-import kotlin.text.substringBefore
 import kotlin.text.toRegex
 
-fun getDataForMainCsv(
+fun deserializeDataForMainCsv(
     messagesWithUsers: List<MessageWithUser>
 ): List<MainCsvDTO> {
 
@@ -63,7 +62,7 @@ fun getDataForMainCsv(
 }
 
 
-fun getDataForTeamCsv(mapForEmailAndTeamName: MutableMap<String, MutableList<String>>): List<TeamCsvDTO> {
+fun deserializeDataForTeamCsv(mapForEmailAndTeamName: MutableMap<String, MutableList<String>>): List<TeamCsvDTO> {
     val listOfProjects = mapForEmailAndTeamName.flatMap { message ->
         val projects = message.value
         projects.asSequence().filter { it != "null" }
@@ -78,7 +77,7 @@ fun getDataForTeamCsv(mapForEmailAndTeamName: MutableMap<String, MutableList<Str
 }
 
 
-fun getDataForTicketCsv(
+fun deserializeDataForTicketCsv(
     slackAPI: SlackAPI,
     messageWithUser: List<MessageWithUser>,
 ): List<YouTrackTicketCsvDTO> {

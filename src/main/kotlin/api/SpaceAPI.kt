@@ -13,17 +13,26 @@ import kotlin.toString
 class SpaceAPI(
     private val token: String,
 ) {
-    private val client: SpaceClient = SpaceClient(
+    private fun createSession() = SpaceClient(
         ktorClient = ktorClientForSpace(),
         serverUrl = "https://jetbrains.team",
-        token = token
-    )
+        token = token)
+
+
+
+    private var client: SpaceClient = createSession()
+
+    private fun recreateSession() {
+        client = createSession()
+    }
 
     // (Email -> 4 Projects max)
     suspend fun getEmailToFirst4TeamNames(users: List<User>): MutableMap<String, MutableList<String>> {
 
         val listOfTeamID = mutableListOf<String>()
         val mapForEmailAndTeam = mutableMapOf<String, MutableList<String>>()
+
+        println("starting to get each user from Space...")
 
         //Mef comment: Create a list of teamIDs (using user email)
         for (user in users) {
@@ -43,22 +52,30 @@ class SpaceAPI(
                 }
                 mapForEmailAndTeam[user.email] = tempListOfTeamIDs
 
+                print("${user.name}, ")
 
             } catch (e: Exception) {
                 println("Failed on  name: ${user.name} email: ${user.email} ")
                 println(e.message + "\n")
             }
         }
+        println("\n\nGot ${users.count()} users")
 
+        recreateSession()
+
+        println("starting to get teams of each user...")
         val teamIdToName = listOfTeamID.map { teamId ->
             val teamName = client.teamDirectory.teams.getTeam(
                 id = TeamIdentifier.Id(teamId)
             ) {
                 name()
             }
+            print("${teamName?.name}, ")
+
             teamId to teamName?.name.toString()
         }.toMap()
 
+        println()
 
         val newMapForEmailAndTeam = mutableMapOf<String, MutableList<String>>()
         var tempTrueNames = mutableListOf<String>()

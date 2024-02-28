@@ -16,6 +16,8 @@ class SlackAPI (
     private val client: MethodsClient = Slack.getInstance().methods()
 
     private fun fetchSlackHistory(channelID: String, oldest: String, latest: String, limit: Int): List<Message> {
+        println("starting to get messages from Slack...")
+
         val allRawMessages = client
             .conversationsHistory {
                 it

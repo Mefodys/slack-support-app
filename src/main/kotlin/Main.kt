@@ -1,9 +1,9 @@
 import api.SlackAPI
 import api.SpaceAPI
 import serialization.createCsv
-import serialization.getDataForTeamCsv
-import serialization.getDataForTicketCsv
-import serialization.getDataForMainCsv
+import serialization.deserializeDataForTeamCsv
+import serialization.deserializeDataForTicketCsv
+import serialization.deserializeDataForMainCsv
 import kotlin.time.TimeSource.Monotonic.markNow
 import kotlin.time.measureTime
 
@@ -13,16 +13,19 @@ suspend fun main() {
     val spaceAPI = SpaceAPI(System.getenv("SPACE_TOKEN"))
     val limit = System.getenv("LIMIT")?.toInt() ?: 500
 
-    val mark = markNow()
-
+    val markStart = markNow()
     val (users, messageWithUser) = slackAPI.getData(Settings.channelToFetch, Settings.fromDate, Settings.tillDate, limit)
-//    val emailToFirst4TeamNames = spaceAPI.getEmailToFirst4TeamNames(users)
+    println("\nSlack ${markStart.elapsedNow()}")
 
-    val dataForMainCsv = getDataForMainCsv(messageWithUser)
-//    val dataForTeamCsv = getDataForTeamCsv(emailToFirst4TeamNames)
-    val dataForTicketCsv = getDataForTicketCsv(slackAPI, messageWithUser)
+    val spaceMark = markNow()
+    val emailToFirst4TeamNames = spaceAPI.getEmailToFirst4TeamNames(users)
+    println("\nSpace ${spaceMark.elapsedNow()}")
 
-    println("apiTime = ${mark.elapsedNow()}")
+    val dataForMainCsv = deserializeDataForMainCsv(messageWithUser)
+    val dataForTeamCsv = deserializeDataForTeamCsv(emailToFirst4TeamNames)
+    val dataForTicketCsv = deserializeDataForTicketCsv(slackAPI, messageWithUser)
+
+    println("apiTime = ${markStart.elapsedNow()}")
 
 
     measureTime {
@@ -32,7 +35,7 @@ suspend fun main() {
             "DateTime, SlackLink, RealName, Email, ReactionYT, ReactionInProgress, ReactionWhiteCheckMark",
             dataForMainCsv
         )
-//        createCsv("filename2.csv", "Team", dataForTeamCsv)
+        createCsv("filename2.csv", "Team", dataForTeamCsv)
         createCsv("filename3.csv", "TicketID, Type, Subsystem, State", dataForTicketCsv)
 
     }.also { println("csvTime is $it") }
