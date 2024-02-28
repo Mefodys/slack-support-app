@@ -45,7 +45,7 @@ class SpaceAPI(
 
 
             } catch (_: Exception) {
-                println("Failed on $user ")
+                println("Failed on  name: ${user.name} email: ${user.email} ")
             }
         }
 
