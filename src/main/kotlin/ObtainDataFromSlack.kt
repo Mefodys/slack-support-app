@@ -3,7 +3,7 @@ import com.slack.api.Slack
 //Mef comment: request to obtain all messages(history) from the Slack API
 fun fetchSlackHistory(id: String?, oldest: String?, latest: String?): List<com.slack.api.model.Message> {
 
-    val slackBotToken = System.getenv("SLACK_BOT_TOKEN")
+    val slackBotToken = System.getenv("SLACK_TOKEN_KOTLINLANG")
     val client = Slack.getInstance().methods()
 
     val result = client.conversationsHistory {
@@ -33,7 +33,7 @@ fun obtainTwoMapsWithUserIDUserNameEmail(rawSlackMessages: List<com.slack.api.mo
     val userEmailsDict = mutableMapOf<String, String>()
 
 
-    val slackBotToken = System.getenv("SLACK_BOT_TOKEN")
+    val slackBotToken = System.getenv("SLACK_TOKEN_KOTLINLANG")
     for (message in rawSlackMessages) {
 
         //Mef comment: Addditional check if the usedID not null (if null then there will NPE during client.userInfo request)

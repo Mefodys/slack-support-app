@@ -54,28 +54,9 @@ fun makeListOfMessagesReadyforFirstCSV(
     return reversedListOfMessages
 }
 
-
-fun listOfMessagesReadyforSecondCsv(mapForEmailAndTeamName: MutableMap<String, MutableList<String>>): MutableList<Message2> {
-    val listOfProjects: MutableList<Message2> = mutableListOf()
-
-    for (message in mapForEmailAndTeamName) {
-        val projects = message.value
-        for (i in projects) {
-            if (i != "null") {
-                val readyMessage = Message2(
-                    project = i
-                )
-                listOfProjects.add(readyMessage)
-            }
-        }
-    }
-    return listOfProjects
-}
-
-
 fun listOfMessagesReadyforThirdCsv(
     rawSlackMessages: List<com.slack.api.model.Message>?,
-    mapForEmailAndTeamName: MutableMap<String, MutableList<String>>
+    //mapForEmailAndTeamName: MutableMap<String, MutableList<String>>
 ): MutableList<Message3> {
 
     val listOfTickets: MutableList<Message3> = mutableListOf()
@@ -91,7 +72,7 @@ fun listOfMessagesReadyforThirdCsv(
 
                         val client = Slack.getInstance().methods()
 
-                        val slackBotToken = System.getenv("SLACK_BOT_TOKEN")
+                        val slackBotToken = System.getenv("SLACK_TOKEN_KOTLINLANG")
                         val messagesInThread = client.conversationsReplies {
                             it
                                 .token(slackBotToken)

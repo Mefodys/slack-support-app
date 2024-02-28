@@ -12,7 +12,7 @@ suspend fun main() {
     val listOfTwoMapsWithUserData = obtainTwoMapsWithUserIDUserNameEmail(rawSlackMessages)
 
     //Mef comment: Gather info from Space and make a map (Email -> 4 Projects max)
-    val mapForEmailAndTeamName = makeMapForEmailandTeam(listOfTwoMapsWithUserData[1])
+//    val mapForEmailAndTeamName = makeMapForEmailandTeam(listOfTwoMapsWithUserData[1])
 
     //Mef comment: create a list ready for the first csv
     val listOfMessagesReadyforFirstCsv = makeListOfMessagesReadyforFirstCSV(
@@ -21,12 +21,12 @@ suspend fun main() {
     )
 
     //Mef comment: create a list ready for the second csv (teams)
-    val listOfMessagesReadyforSecondCsv = listOfMessagesReadyforSecondCsv(
-        mapForEmailAndTeamName
-    )
+//    val listOfMessagesReadyforSecondCsv = listOfMessagesReadyforSecondCsv(
+//        mapForEmailAndTeamName
+//    )
 
     //Mef comment: create a list ready for the third csv (YouTrack tickets and its details)
-    val listOfMessagesReadyforThirdCsv = listOfMessagesReadyforThirdCsv(rawSlackMessages, mapForEmailAndTeamName)
+    val listOfMessagesReadyforThirdCsv = listOfMessagesReadyforThirdCsv(rawSlackMessages)
 
     //Mef comment: output the first CSV file
     withContext(Dispatchers.IO) {
@@ -34,9 +34,9 @@ suspend fun main() {
     }
 
     //Mef comment: output the second CSV file
-    withContext(Dispatchers.IO) {
-        FileOutputStream("filename2.csv").apply { writeCsv2(listOfMessagesReadyforSecondCsv) }
-    }
+//    withContext(Dispatchers.IO) {
+//        FileOutputStream("filename2.csv").apply { writeCsv2(listOfMessagesReadyforSecondCsv) }
+//    }
 
     //Mef comment: output the third CSV file
     withContext(Dispatchers.IO) {
