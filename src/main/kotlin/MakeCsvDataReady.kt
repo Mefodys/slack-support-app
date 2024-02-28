@@ -61,7 +61,7 @@ fun listOfMessagesReadyforThirdCsv(
 
     val listOfTickets: MutableList<Message3> = mutableListOf()
 
-    val ticketSet = mutableSetOf<String>()
+    var ticketSet = mutableSetOf<String>()
 
     if (rawSlackMessages != null) {
         for (message in rawSlackMessages) {
@@ -87,8 +87,7 @@ fun listOfMessagesReadyforThirdCsv(
                             if (i.text.contains("https://youtrack.jetbrains.com/issue/")) {
                                 val foundTicket = pattern.findAll(i.text)
                                 val names = foundTicket.map { it.value }.joinToString()
-                                ticketSet.add(names.substringBefore(","))
-
+                                ticketSet.add(names)
                             }
                         }
                     }
@@ -97,8 +96,13 @@ fun listOfMessagesReadyforThirdCsv(
         }
     }
 
+    val resultStringList = mutableSetOf<String>()
+    for (i in ticketSet) {
+        val newStringList: Set<String> = i.split(", ").toSet()
+        resultStringList += newStringList
+    }
 
-    for (ticket in ticketSet) {
+    for (ticket in resultStringList) {
         if (ticket != "null") {
             val readyMessage = Message3(
                 issueID = ticket
