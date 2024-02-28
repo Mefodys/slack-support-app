@@ -44,8 +44,9 @@ class SpaceAPI(
                 mapForEmailAndTeam[user.email] = tempListOfTeamIDs
 
 
-            } catch (_: Exception) {
-                println("Failed on $user ")
+            } catch (e: Exception) {
+                println("Failed on  name: ${user.name} email: ${user.email} ")
+                println(e.message + "\n")
             }
         }
 

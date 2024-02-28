@@ -16,10 +16,10 @@ suspend fun main() {
     val mark = markNow()
 
     val (users, messageWithUser) = slackAPI.getData(Settings.channelToFetch, Settings.fromDate, Settings.tillDate, limit)
-    val emailToFirst4TeamNames = spaceAPI.getEmailToFirst4TeamNames(users)
+//    val emailToFirst4TeamNames = spaceAPI.getEmailToFirst4TeamNames(users)
 
     val dataForMainCsv = getDataForMainCsv(messageWithUser)
-    val dataForTeamCsv = getDataForTeamCsv(emailToFirst4TeamNames)
+//    val dataForTeamCsv = getDataForTeamCsv(emailToFirst4TeamNames)
     val dataForTicketCsv = getDataForTicketCsv(slackAPI, messageWithUser)
 
     println("apiTime = ${mark.elapsedNow()}")
@@ -32,7 +32,7 @@ suspend fun main() {
             "DateTime, SlackLink, RealName, Email, ReactionYT, ReactionInProgress, ReactionWhiteCheckMark",
             dataForMainCsv
         )
-        createCsv("filename2.csv", "Team", dataForTeamCsv)
+//        createCsv("filename2.csv", "Team", dataForTeamCsv)
         createCsv("filename3.csv", "TicketID, Type, Subsystem, State", dataForTicketCsv)
 
     }.also { println("csvTime is $it") }

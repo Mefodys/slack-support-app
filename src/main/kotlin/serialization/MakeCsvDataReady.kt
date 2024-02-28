@@ -88,14 +88,20 @@ fun getDataForTicketCsv(
     val getMessagesWithYTLink = { messagesInThread: ConversationsRepliesResponse ->
         messagesInThread.messages.asSequence()
             .filter { it.text.contains("https://youtrack.jetbrains.com/issue/") }
-            .map {
+            .flatMap {
                 val foundTicket = pattern.findAll(it.text)
                 val names = foundTicket.joinToString { it.value }
-                names.substringBefore(",")
+                names.split(", ")//.substringBefore(", ")
             }.toSet()
+
             .filter { it != "null" } // are we sure it is possible?
     }
 
+//    val resultStringList = mutableSetOf<String>()
+//    for (i in ticketSet) {
+//        val newStringList: Set<String> = i.split(", ").toSet()
+//        resultStringList += newStringList
+//    }
     val result = messageWithUser.asSequence()
         .filter { it.msg.reactions != null }
         .flatMap {
