@@ -1,14 +1,8 @@
 package types
 
-data class YouTrackTicketCsvDTO(
-    val issueID: String,
-    val issueType: String? = null,
-    val subsystem: String? = null,
-    val stateInYT: String? = null
-) : CsvSerializable
 
 
-data class YouTrackTicketCsvDTO2(
+class YouTrackIssueDTO(
     val id: String,
     val type: String,
     val subsystem: String,

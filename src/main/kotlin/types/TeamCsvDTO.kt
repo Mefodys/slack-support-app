@@ -1,5 +1,5 @@
 package types
 
-data class TeamCsvDTO(
+class TeamCsvDTO(
     val project: String? = null
 ) : CsvSerializable

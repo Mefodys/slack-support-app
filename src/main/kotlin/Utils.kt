@@ -8,10 +8,9 @@ fun dateToUnixTimestamp(year: Int, month: Int, day: Int): Long {
     calendar.set(year, month - 1, day) // Calendar month is 0-based, so subtract 1
 
     return calendar.timeInMillis / 1000L // Convert milliseconds to seconds
-
 }
 
-val messagePermalink = "https://" + "jetbrains.slack.com" + "/archives/" + Settings.channelToFetch + "/p"
+val messagePermalink = "https://jetbrains.slack.com/archives/" + Settings.channelToFetch + "/p"
 
 //Mef comment: convert ts to DateTime
 fun convertTStoReadableDateTime(message: com.slack.api.model.Message): String {

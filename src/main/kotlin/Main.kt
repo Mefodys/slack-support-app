@@ -26,19 +26,18 @@ fun main() = runBlocking {
     val mainCsv = getDataForMainCsv(messageWithUser)
     val teamCsv = getDataForTeamCsv(emailToFirst4TeamNames)
     val ytIds = getIssueIdFromMessages(slackAPI, messageWithUser)
-
-    println("apiTime = ${mark.elapsedNow()}")
-
     val ytCsv = youTrackAPI.fetchIssues(ytIds)
 
+
+    println("apiTime = ${mark.elapsedNow()}")
     measureTime {
         createCsv(
-            "filename.csv",
+            "messages.csv",
             "DateTime, SlackLink, RealName, Email, ReactionYT, ReactionInProgress, ReactionWhiteCheckMark",
             mainCsv
         )
-        createCsv("filename2.csv", "Team", teamCsv)
-        createCsv("filename3.csv", "IssueID, Type, Subsystem, State", ytCsv)
+        createCsv("teams.csv", "Team", teamCsv)
+        createCsv("youtrack.csv", "IssueID, Type, Subsystem, State", ytCsv)
 
     }.also { println("csvTime is $it") }
 

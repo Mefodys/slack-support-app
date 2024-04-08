@@ -11,7 +11,7 @@ import kotlinx.coroutines.delay
 import kotlinx.coroutines.runBlocking
 import kotlinx.serialization.*
 import kotlinx.serialization.json.*
-import types.YouTrackTicketCsvDTO2
+import types.YouTrackIssueDTO
 
 const val ISSUES_URL = "https://youtrack.jetbrains.com:443/api"
 const val STEP = 10
@@ -63,7 +63,7 @@ class YouTrackAPI(
         return json.decodeFromString<List<Issue>>(response)
     }
 
-    fun fetchIssues(issueIds: List<String>): List<YouTrackTicketCsvDTO2> = runBlocking {
+    fun fetchIssues(issueIds: List<String>): List<YouTrackIssueDTO> = runBlocking {
         issueIds
             .chunked(STEP)
             .flatMap {
@@ -84,7 +84,7 @@ class YouTrackAPI(
                         val issueType = getCustomField(it, "Type")
                         val issueState = getCustomField(it, "State")
 
-                        YouTrackTicketCsvDTO2(
+                        YouTrackIssueDTO(
                             id = it.idReadable, type = issueType, subsystem = subsystem, state = issueState
                         )
                     } catch (e: Throwable) {
