@@ -6,7 +6,6 @@ import convertTStoReadableDateTime
 import messagePermalink
 import types.MainCsvDTO
 import types.TeamCsvDTO
-import types.YouTrackTicketCsvDTO
 import types.MessageWithUser
 import kotlin.sequences.flatMap
 import kotlin.sequences.joinToString
@@ -78,10 +77,10 @@ fun getDataForTeamCsv(mapForEmailAndTeamName: MutableMap<String, MutableList<Str
 }
 
 
-fun getDataForTicketCsv(
+fun getIssueIdFromMessages(
     slackAPI: SlackAPI,
     messageWithUser: List<MessageWithUser>,
-): List<YouTrackTicketCsvDTO> {
+): List<String> {
 
     val pattern = ("[A-Z]{2,}\\-[\\d]{1,}").toRegex()
 
@@ -106,7 +105,6 @@ fun getDataForTicketCsv(
             } else
                 setOf()
         }
-        .map { YouTrackTicketCsvDTO(issueID = it) }
         .toList()
 
     return result
