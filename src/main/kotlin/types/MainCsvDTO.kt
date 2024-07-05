@@ -1,6 +1,6 @@
 package types
 
-data class MainCsvDTO(
+class MainCsvDTO(
     val dateTime: String,
     val slackLink: String,
     val realName: String? = null,

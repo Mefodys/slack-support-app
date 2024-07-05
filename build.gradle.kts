@@ -1,7 +1,11 @@
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 
+val json_version: String by project
+
 plugins {
     kotlin("jvm") version "1.9.20"
+    kotlin("plugin.serialization") version "1.9.20"
+
     application
 }
 
@@ -19,6 +23,7 @@ dependencies {
 
     implementation("org.jetbrains:space-sdk-jvm:168099")
     implementation("io.ktor:ktor-client-cio-jvm:2.0.3")
+    implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:$json_version")
 
     testImplementation(kotlin("test"))
 }
